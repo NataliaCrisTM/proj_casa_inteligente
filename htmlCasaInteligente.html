@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 30px;
+            height: 17px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+        }
+
+        .switch .slider:before {
+            position: absolute;
+            content: "";
+            height: 10px;
+            width: 10px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+
+        .switch input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        .switch input:checked + .slider:before {
+            transform: translateX(15px);
+        }
+
+        /* Estilo opcional para o marcador do botão */
+        .switch .slider:before {
+            border-radius: 50%;
+        }
+    </style>
+    <title>Casa Inteligente</title>
+</head>
+<body>
+    <h3>Interruptores de luz</h3>    
+    <p>Luz do sotão:
+        <label class="switch">
+            <input type="checkbox" name="luzSotao">
+            <span class="slider"></span>
+        </label>
+    </p>
+    <p>Luz do quarto:
+        <label class="switch">
+            <input type="checkbox" name="luzQuarto">
+            <span class="slider"></span>
+        </label>
+    </p>
+    <p>Luz do banheiro:
+        <label class="switch">
+            <input type="checkbox" name="luzBanheiro">
+            <span class="slider"></span>
+        </label>
+    </p>
+    <p>Luz da sala:
+        <label class="switch">
+            <input type="checkbox" name="luzSala">
+            <span class="slider"></span>
+        </label>
+    </p>
+    <p>Luz da garagem:
+        <label class="switch">
+            <input type="checkbox" name="luzGaragem">
+            <span class="slider"></span>
+        </label>
+    </p>
+    <p>Luz da sala:
+        <label class="switch">
+            <input type="checkbox" name="luzSala">
+            <span class="slider"></span>
+        </label>
+    </p>
+    <p>Luz da varanda:
+        <label class="switch">
+            <input type="checkbox" name="luzVaranda">
+            <span class="slider"></span>
+        </label>
+    </p>
+</body>
+</html>
