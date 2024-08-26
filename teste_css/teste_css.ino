@@ -9,31 +9,28 @@ EthernetServer server(80);
 
 String readString;
 
-int luzGaragem = 35;      // Usa o pino digital 35 para a luz da Garagem
-int luzSala = 33;         // Usa o pino digital 33 para a luz da Sala
-int luzVaranda = 34;      // Usa o pino digital 34 para a luz da Varanda
-int luzQuarto = 31;       // Usa o pino digital 31 para a luz do Quarto
-int luzBanheiro = 32;     // Usa o pino digital 32 para a luz do Banheiro
-int luzSotao = 30;        // Usa o pino digital 30 para a luz do Sotão
-int motorGaragem = 36;    // Usa o pino digital 36 para o motor da Garagem
-int sensorPir = 29;       // Usa o pino digital 29 para o sensor PIR
-int buzAlarme = 28;      // Usa o pino digital 28 para a buzina do Alarme
+int luzGaragem = 35;
+int luzSala = 33;
+int luzVaranda = 34;
+int luzQuarto = 31;
+int luzBanheiro = 32;
+int luzSotao = 30;
+int motorGaragem = 36;
+int sensorPir = 29;
+int buzAlarme = 28;
 
+int estadoGaragem = LOW;
+int estadoSala = LOW;
+int estadoVaranda = LOW;
+int estadoQuarto = LOW;
+int estadoBanheiro = LOW;
+int estadoSotao = LOW;
 int estadoAlarme = LOW;
 Servo servoGaragem;
 
-void exibir() {
-  Serial.print("Alarme: ");
-  Serial.println(estadoAlarme);
-  Serial.print("Sensor: ");
-  Serial.println(digitalRead(sensorPir));
-  Serial.println(" ");
-}
-
 void setup() {
-  Serial.begin(9600);                  // Inicializa a comunicação serial
-
-  pinMode(sensorPir, INPUT);           // Configura o pino do sensor de presença como ENTRADA
+  Serial.begin(9600);
+  pinMode(sensorPir, INPUT);
   pinMode(luzGaragem, OUTPUT);
   pinMode(luzSala, OUTPUT);
   pinMode(luzVaranda, OUTPUT);
@@ -42,8 +39,8 @@ void setup() {
   pinMode(luzSotao, OUTPUT);
   pinMode(buzAlarme, OUTPUT);
 
-  servoGaragem.attach(motorGaragem);   // Configura a conexão do pino usado para controlar o Servo       
-  servoGaragem.write(170);             // Inicia com o portão fechado (170º)
+  servoGaragem.attach(motorGaragem);
+  servoGaragem.write(170);
 
   Ethernet.begin(mac, ip);
   server.begin();
@@ -55,174 +52,110 @@ void loop() {
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
-
         if (readString.length() < 100) {
-          readString += c;             
+          readString += c;
         }
-
         if (c == '\n') {
-          client.println("HTTP/1.1 200 OK");
-          client.println("Content-Type: text/html");
-          client.println();
-
-          client.println("<!DOCTYPE HTML>");
-          client.println("<html>");
-          client.println("<head>");
-          client.println("<style>");
-          client.println("body { font-family: Arial; text-align: center; }");
-          client.println(".slider { width: 60px; height: 34px; position: relative; }");
-          client.println(".slider input { opacity: 0; width: 0; height: 0; }");
-          client.println(".slider-label { font-size: 20px; margin: 10px 0; }");
-          client.println(".slider-switch { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }");
-          client.println(".slider-switch:before { position: absolute; content: ''; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }");
-          client.println("input:checked + .slider-switch { background-color: #2196F3; }");
-          client.println("input:checked + .slider-switch:before { transform: translateX(26px); }");
-          client.println(".slider-wrap { display: flex; justify-content: center; align-items: center; }");
-          client.println("</style>");
-          client.println("</head>");
-          client.println("<body>");
-          client.println("<h1>Luzes da Casa</h1>");
-          client.println("<hr />");
-
-          // Luz da Garagem
-          client.println("<div class='slider-wrap'>");
-          client.println("<label class='slider-label'>Luz da Garagem:</label>");
-          client.println("<label class='slider'>");
-          client.println("<input type='checkbox' onchange='window.location.href=(this.checked) ? \"/?ledonGaragem\" : \"/?ledoffGaragem\";'>");
-          client.println("<span class='slider-switch'></span>");
-          client.println("</label>");
-          client.println("</div>");
-          client.println("<hr />");
-
-          // Luz da Sala
-          client.println("<div class='slider-wrap'>");
-          client.println("<label class='slider-label'>Luz da Sala:</label>");
-          client.println("<label class='slider'>");
-          client.println("<input type='checkbox' onchange='window.location.href=(this.checked) ? \"/?ledonSala\" : \"/?ledoffSala\";'>");
-          client.println("<span class='slider-switch'></span>");
-          client.println("</label>");
-          client.println("</div>");
-          client.println("<hr />");
-
-          // Luz da Varanda
-          client.println("<div class='slider-wrap'>");
-          client.println("<label class='slider-label'>Luz da Varanda:</label>");
-          client.println("<label class='slider'>");
-          client.println("<input type='checkbox' onchange='window.location.href=(this.checked) ? \"/?ledonVaranda\" : \"/?ledoffVaranda\";'>");
-          client.println("<span class='slider-switch'></span>");
-          client.println("</label>");
-          client.println("</div>");
-          client.println("<hr />");
-
-          // Luz do Quarto
-          client.println("<div class='slider-wrap'>");
-          client.println("<label class='slider-label'>Luz do Quarto:</label>");
-          client.println("<label class='slider'>");
-          client.println("<input type='checkbox' onchange='window.location.href=(this.checked) ? \"/?ledonQuarto\" : \"/?ledoffQuarto\";'>");
-          client.println("<span class='slider-switch'></span>");
-          client.println("</label>");
-          client.println("</div>");
-          client.println("<hr />");
-
-          // Luz do Banheiro
-          client.println("<div class='slider-wrap'>");
-          client.println("<label class='slider-label'>Luz do Banheiro:</label>");
-          client.println("<label class='slider'>");
-          client.println("<input type='checkbox' onchange='window.location.href=(this.checked) ? \"/?ledonBanheiro\" : \"/?ledoffBanheiro\";'>");
-          client.println("<span class='slider-switch'></span>");
-          client.println("</label>");
-          client.println("</div>");
-          client.println("<hr />");
-
-          // Luz do Sotão
-          client.println("<div class='slider-wrap'>");
-          client.println("<label class='slider-label'>Luz do Sotão:</label>");
-          client.println("<label class='slider'>");
-          client.println("<input type='checkbox' onchange='window.location.href=(this.checked) ? \"/?ledonSotao\" : \"/?ledoffSotao\";'>");
-          client.println("<span class='slider-switch'></span>");
-          client.println("</label>");
-          client.println("</div>");
-          client.println("<hr />");
-
-          // Portão
-          client.println("<div class='slider-wrap'>");
-          client.println("<label class='slider-label'>Portão:</label>");
-          client.println("<label class='slider'>");
-          client.println("<input type='checkbox' onchange='window.location.href=(this.checked) ? \"/?portaoOpen\" : \"/?portaoClose\";'>");
-          client.println("<span class='slider-switch'></span>");
-          client.println("</label>");
-          client.println("</div>");
-          client.println("<hr />");
-
-          // Alarme
-          client.println("<div class='slider-wrap'>");
-          client.println("<label class='slider-label'>Alarme:</label>");
-          client.println("<label class='slider'>");
-          client.println("<input type='checkbox' onchange='window.location.href=(this.checked) ? \"/?onAlarme\" : \"/?offAlarme\";'>");
-          client.println("<span class='slider-switch'></span>");
-          client.println("</label>");
-          client.println("</div>");
-          client.println("<hr />");
-
-          client.println("</body>");
-          client.println("</html>");
-
+          processRequest(readString);
+          sendResponse(client);
+          readString = "";
           delay(1);
           client.stop();
-
-          if (readString.indexOf("?onAlarme") > 0) {
-            estadoAlarme = HIGH;
-            Serial.println("Alarme ligado");
-          } else if (readString.indexOf("?offAlarme") > 0) {
-            estadoAlarme = LOW;
-            Serial.println("Alarme desligado");
-          }
-
-          if (readString.indexOf("?portaoOpen") > 0) {
-            servoGaragem.write(90);
-          } else if (readString.indexOf("?portaoClose") > 0) {
-            servoGaragem.write(170);
-          }
-
-          if (readString.indexOf("?ledonGaragem") > 0) {
-            digitalWrite(luzGaragem, HIGH);
-          } else if (readString.indexOf("?ledoffGaragem") > 0) {
-            digitalWrite(luzGaragem, LOW);
-          }
-
-          if (readString.indexOf("?ledonSala") > 0) {
-            digitalWrite(luzSala, HIGH);
-          } else if (readString.indexOf("?ledoffSala") > 0) {
-            digitalWrite(luzSala, LOW);
-          }
-
-          if (readString.indexOf("?ledonVaranda") > 0) {
-            digitalWrite(luzVaranda, HIGH);
-          } else if (readString.indexOf("?ledoffVaranda") > 0) {
-            digitalWrite(luzVaranda, LOW);
-          }
-
-          if (readString.indexOf("?ledonQuarto") > 0) {
-            digitalWrite(luzQuarto, HIGH);
-          } else if (readString.indexOf("?ledoffQuarto") > 0) {
-            digitalWrite(luzQuarto, LOW);
-          }
-
-          if (readString.indexOf("?ledonBanheiro") > 0) {
-            digitalWrite(luzBanheiro, HIGH);
-          } else if (readString.indexOf("?ledoffBanheiro") > 0) {
-            digitalWrite(luzBanheiro, LOW);
-          }
-
-          if (readString.indexOf("?ledonSotao") > 0) {
-            digitalWrite(luzSotao, HIGH);
-          } else if (readString.indexOf("?ledoffSotao") > 0) {
-            digitalWrite(luzSotao, LOW);
-          }
-
-          readString = "";
         }
       }
     }
   }
+
+  if (estadoAlarme == LOW) {
+    digitalWrite(buzAlarme, LOW);
+  }
+
+  if (digitalRead(sensorPir) == HIGH && estadoAlarme == HIGH) {
+    Serial.println("Movimento detectado!");
+    digitalWrite(buzAlarme, HIGH);
+    delay(100);
+    digitalWrite(buzAlarme, LOW);
+    delay(60);
+  }
+}
+
+void processRequest(String req) {
+  if (req.indexOf("ledonGaragem") > 0) estadoGaragem = HIGH;
+  else if (req.indexOf("ledoffGaragem") > 0) estadoGaragem = LOW;
+  digitalWrite(luzGaragem, estadoGaragem);
+
+  if (req.indexOf("ledonSala") > 0) estadoSala = HIGH;
+  else if (req.indexOf("ledoffSala") > 0) estadoSala = LOW;
+  digitalWrite(luzSala, estadoSala);
+
+  if (req.indexOf("ledonVaranda") > 0) estadoVaranda = HIGH;
+  else if (req.indexOf("ledoffVaranda") > 0) estadoVaranda = LOW;
+  digitalWrite(luzVaranda, estadoVaranda);
+
+  if (req.indexOf("ledonQuarto") > 0) estadoQuarto = HIGH;
+  else if (req.indexOf("ledoffQuarto") > 0) estadoQuarto = LOW;
+  digitalWrite(luzQuarto, estadoQuarto);
+
+  if (req.indexOf("ledonBanheiro") > 0) estadoBanheiro = HIGH;
+  else if (req.indexOf("ledoffBanheiro") > 0) estadoBanheiro = LOW;
+  digitalWrite(luzBanheiro, estadoBanheiro);
+
+  if (req.indexOf("ledonSotao") > 0) estadoSotao = HIGH;
+  else if (req.indexOf("ledoffSotao") > 0) estadoSotao = LOW;
+  digitalWrite(luzSotao, estadoSotao);
+
+  if (req.indexOf("portaoOpen") > 0) servoGaragem.write(90);
+  else if (req.indexOf("portaoClose") > 0) servoGaragem.write(170);
+
+  if (req.indexOf("onAlarme") > 0) estadoAlarme = HIGH;
+  else if (req.indexOf("offAlarme") > 0) estadoAlarme = LOW;
+}
+
+void sendResponse(EthernetClient client) {
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: text/html");
+  client.println();
+
+  client.println("<!DOCTYPE html>");
+  client.println("<html lang=\"en\">");
+  client.println("<head>");
+  client.println("<meta charset=\"UTF-8\">");
+  client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+  client.println("<style>");
+  client.println("body { font-family: Arial, sans-serif; margin: 20px; }");
+  client.println("h1 { color: #333; }");
+  client.println(".slider-container { display: flex; align-items: center; margin-bottom: 20px; }");
+  client.println(".slider-container p { margin: 0; padding-right: 20px; }");
+  client.println(".switch { position: relative; display: inline-block; width: 60px; height: 34px; }");
+  client.println(".switch input { opacity: 0; width: 0; height: 0; }");
+  client.println(".slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; }");
+  client.println(".slider:before { position: absolute; content: \"\"; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; }");
+  client.println("input:checked + .slider { background-color: #2196F3; }");
+  client.println("input:checked + .slider:before { transform: translateX(26px); }");
+  client.println(".slider.round { border-radius: 34px; }");
+  client.println(".slider.round:before { border-radius: 50%; }");
+  client.println("</style>");
+  client.println("</head>");
+  client.println("<body>");
+  client.println("<h1>Luzes da Casa</h1>");
+
+  client.println("<div class=\"slider-container\">");
+  client.println("<p>Luz da Garagem:</p>");
+  client.println("<label class=\"switch\">");
+  client.println("<input type=\"checkbox\" id=\"garagem\" onchange=\"toggleDevice('garagem', this.checked)\">");
+  client.println("<span class=\"slider round\"></span>");
+  client.println("</label>");
+  client.println("</div>");
+
+  // Adicione outros dispositivos aqui, conforme necessário
+
+  client.println("<script>");
+  client.println("function toggleDevice(device, state) {");
+  client.println("  let url = `/?led${state ? 'on' : 'off'}${device.charAt(0).toUpperCase() + device.slice(1)}`;");
+  client.println("  fetch(url);");
+  client.println("}");
+  client.println("</script>");
+
+  client.println("</body>");
+  client.println("</html>");
 }
